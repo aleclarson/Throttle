@@ -5,16 +5,16 @@
 Throttle = require "throttle"
 
 func = Throttle
-  limit: 1000
+  ms: 1000
   bind: { now: null }
-  call: (id) ->
+  fn: (id) ->
     now = Date.now()
     console.log "Tick #{id}: " + (if @now? then now - @now else 0)
     @now = now
 
 func 1 # This will run immediately.
 
-func.call 2 # This ignores the throttle.
+func.call 2 # This runs immediately and resets the throttle.
 
 func 3 # This will be delayed 1000 ms.
 
