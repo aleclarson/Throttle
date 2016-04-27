@@ -11,22 +11,27 @@ module.exports = Factory("Throttle", {
   create: function() {
     var self;
     return self = function() {
-      return self._callEventually(self._bind || this, arguments);
+      self._callEventually(self._bind || this, arguments);
     };
   },
   optionTypes: {
     ms: Number,
     fn: Function.Kind,
-    bind: Any
+    bind: Any,
+    queueThrottled: Boolean
+  },
+  optionDefaults: {
+    queueThrottled: true
   },
   initValues: function(options) {
     return {
       _ms: options.ms,
       _fn: options.fn,
       _bind: options.bind,
-      _throttle: null,
+      _queueThrottled: options.queueThrottled,
       _pending: null,
       _disabled: false,
+      _throttle: null,
       _afterThrottle: (function(_this) {
         return function() {
           var args, bind, ref;
@@ -68,13 +73,19 @@ module.exports = Factory("Throttle", {
       return;
     }
     if (this._throttle != null) {
-      this._pending = {
-        bind: bind,
-        args: args
-      };
+      return this._setPending(bind, args);
     } else {
-      this._callImmediately(bind, args);
+      return this._callImmediately(bind, args);
     }
+  },
+  _setPending: function(bind, args) {
+    if (!this._queueThrottled) {
+      return;
+    }
+    return this._pending = {
+      bind: bind,
+      args: args
+    };
   },
   _stop: function() {
     clearTimeout(this._throttle);

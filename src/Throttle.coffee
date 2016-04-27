@@ -12,19 +12,33 @@ module.exports = Factory "Throttle",
   create: ->
     return self = ->
       self._callEventually self._bind or this, arguments
+      return
 
   optionTypes:
     ms: Number
     fn: Function.Kind
     bind: Any
+    queueThrottled: Boolean
+
+  optionDefaults:
+    queueThrottled: yes
 
   initValues: (options) ->
+
     _ms: options.ms
+
     _fn: options.fn
+
     _bind: options.bind
-    _throttle: null
+
+    _queueThrottled: options.queueThrottled
+
     _pending: null
+
     _disabled: no
+
+    _throttle: null
+
     _afterThrottle: =>
       @_throttle = null
       return unless @_pending?
@@ -54,9 +68,12 @@ module.exports = Factory "Throttle",
 
   _callEventually: (bind, args) ->
     return if @_disabled
-    if @_throttle? then @_pending = { bind, args }
+    if @_throttle? then @_setPending bind, args
     else @_callImmediately bind, args
-    return
+
+  _setPending: (bind, args) ->
+    return unless @_queueThrottled
+    @_pending = { bind, args }
 
   _stop: ->
     clearTimeout @_throttle
