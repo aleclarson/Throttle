@@ -1,51 +1,52 @@
-var Any, Factory;
-
-require("lotus-require");
+var Any, Type, type;
 
 Any = require("type-utils").Any;
 
-Factory = require("factory");
+Type = require("Type");
 
-module.exports = Factory("Throttle", {
-  kind: Function,
-  create: function() {
-    var self;
-    return self = function() {
-      self._callEventually(self._bind || this, arguments);
-    };
+type = Type("Throttle");
+
+type.inherits(Function);
+
+type.createInstance(function() {
+  var self;
+  return self = function() {
+    return self._callEventually(self._context || this, arguments);
+  };
+});
+
+type.optionTypes = {
+  ms: Number,
+  fn: Function.Kind,
+  context: Any,
+  runEventually: Boolean
+};
+
+type.optionDefaults = {
+  runEventually: true
+};
+
+type.defineValues({
+  _ms: function(options) {
+    return options.ms;
   },
-  optionTypes: {
-    ms: Number,
-    fn: Function.Kind,
-    bind: Any,
-    queueThrottled: Boolean
+  _fn: function(options) {
+    return options.fn;
   },
-  optionDefaults: {
-    queueThrottled: true
+  _context: function(options) {
+    return options.context;
   },
-  initValues: function(options) {
-    return {
-      _ms: options.ms,
-      _fn: options.fn,
-      _bind: options.bind,
-      _queueThrottled: options.queueThrottled,
-      _pending: null,
-      _disabled: false,
-      _throttle: null,
-      _afterThrottle: (function(_this) {
-        return function() {
-          var args, bind, ref;
-          _this._throttle = null;
-          if (_this._pending == null) {
-            return;
-          }
-          ref = _this._pending, bind = ref.bind, args = ref.args;
-          _this._pending = null;
-          return _this._callImmediately(bind, args);
-        };
-      })(this)
-    };
+  _runEventually: function(options) {
+    return options.runEventually;
   },
+  _pending: null,
+  _disabled: false,
+  _throttle: null
+});
+
+type.bindMethods(["_onThrottleEnd"]);
+
+type.defineMethods({
   toString: function() {
     return this._callEventually.toString();
   },
@@ -54,7 +55,7 @@ module.exports = Factory("Throttle", {
       return;
     }
     this._stop();
-    this._callImmediately(this._bind || this, arguments);
+    this._callImmediately(this._context || this, arguments);
   },
   disable: function() {
     if (this._disabled) {
@@ -62,30 +63,40 @@ module.exports = Factory("Throttle", {
     }
     this._disabled = true;
     this._stop();
-    this._bind = null;
+    this._context = null;
   },
-  _callImmediately: function(bind, args) {
-    this._fn.apply(bind, args);
-    return this._throttle = setTimeout(this._afterThrottle, this._ms);
-  },
-  _callEventually: function(bind, args) {
+  _callEventually: function(context, args) {
     if (this._disabled) {
       return;
     }
     if (this._throttle != null) {
-      return this._setPending(bind, args);
+      return this._setPending(context, args);
     } else {
-      return this._callImmediately(bind, args);
+      return this._callImmediately(context, args);
     }
   },
-  _setPending: function(bind, args) {
-    if (!this._queueThrottled) {
+  _setPending: function(context, args) {
+    if (!this._runEventually) {
       return;
     }
     return this._pending = {
-      bind: bind,
+      context: context,
       args: args
     };
+  },
+  _onThrottleEnd: function() {
+    var args, context, ref;
+    this._throttle = null;
+    if (!this._pending) {
+      return;
+    }
+    ref = this._pending, context = ref.context, args = ref.args;
+    this._pending = null;
+    return this._callImmediately(context, args);
+  },
+  _callImmediately: function(context, args) {
+    this._fn.apply(context, args);
+    return this._throttle = setTimeout(this._onThrottleEnd, this._ms);
   },
   _stop: function() {
     clearTimeout(this._throttle);
@@ -93,5 +104,7 @@ module.exports = Factory("Throttle", {
     return this._pending = null;
   }
 });
+
+module.exports = type.build();
 
 //# sourceMappingURL=../../map/src/Throttle.map

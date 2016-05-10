@@ -1,50 +1,43 @@
 
-require "lotus-require"
-
 { Any } = require "type-utils"
 
-Factory = require "factory"
+Type = require "Type"
 
-module.exports = Factory "Throttle",
+type = Type "Throttle"
 
-  kind: Function
+type.inherits Function
 
-  create: ->
-    return self = ->
-      self._callEventually self._bind or this, arguments
-      return
+type.createInstance ->
+  self = -> self._callEventually self._context or this, arguments
 
-  optionTypes:
-    ms: Number
-    fn: Function.Kind
-    bind: Any
-    queueThrottled: Boolean
+type.optionTypes =
+  ms: Number
+  fn: Function.Kind
+  context: Any
+  runEventually: Boolean
 
-  optionDefaults:
-    queueThrottled: yes
+type.optionDefaults =
+  runEventually: yes
 
-  initValues: (options) ->
+type.defineValues
 
-    _ms: options.ms
+  _ms: (options) -> options.ms
 
-    _fn: options.fn
+  _fn: (options) -> options.fn
 
-    _bind: options.bind
+  _context: (options) -> options.context
 
-    _queueThrottled: options.queueThrottled
+  _runEventually: (options) -> options.runEventually
 
-    _pending: null
+  _pending: null
 
-    _disabled: no
+  _disabled: no
 
-    _throttle: null
+  _throttle: null
 
-    _afterThrottle: =>
-      @_throttle = null
-      return unless @_pending?
-      { bind, args } = @_pending
-      @_pending = null
-      @_callImmediately bind, args
+type.bindMethods [ "_onThrottleEnd" ]
+
+type.defineMethods
 
   toString: ->
     @_callEventually.toString()
@@ -52,30 +45,39 @@ module.exports = Factory "Throttle",
   call: ->
     return if @_disabled
     @_stop()
-    @_callImmediately @_bind or this, arguments
+    @_callImmediately @_context or this, arguments
     return
 
   disable: ->
     return if @_disabled
     @_disabled = yes
     @_stop()
-    @_bind = null
+    @_context = null
     return
 
-  _callImmediately: (bind, args) ->
-    @_fn.apply bind, args
-    @_throttle = setTimeout @_afterThrottle, @_ms
-
-  _callEventually: (bind, args) ->
+  _callEventually: (context, args) ->
     return if @_disabled
-    if @_throttle? then @_setPending bind, args
-    else @_callImmediately bind, args
+    if @_throttle? then @_setPending context, args
+    else @_callImmediately context, args
 
-  _setPending: (bind, args) ->
-    return unless @_queueThrottled
-    @_pending = { bind, args }
+  _setPending: (context, args) ->
+    return unless @_runEventually
+    @_pending = { context, args }
+
+  _onThrottleEnd: ->
+    @_throttle = null
+    return unless @_pending
+    { context, args } = @_pending
+    @_pending = null
+    @_callImmediately context, args
+
+  _callImmediately: (context, args) ->
+    @_fn.apply context, args
+    @_throttle = setTimeout @_onThrottleEnd, @_ms
 
   _stop: ->
     clearTimeout @_throttle
     @_throttle = null
     @_pending = null
+
+module.exports = type.build()

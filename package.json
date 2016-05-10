@@ -1,10 +1,14 @@
 {
   "name": "throttle",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "./js/src/Throttle",
   "dependencies": {
-    "factory": "aleclarson/factory#1.0.0",
-    "lotus-require": "aleclarson/lotus-require#1.0.0",
-    "type-utils": "aleclarson/type-utils#1.0.0"
+    "type-utils": "aleclarson/type-utils#1.0.0",
+    "Type": "aleclarson/Type#1.0.0"
+  },
+  "lotus": {
+    "plugins": [
+      "lotus-coffee"
+    ]
   }
 }

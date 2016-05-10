@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "Throttle.js",
+  "sourceRoot": "../../spec",
+  "sources": [
+    "Throttle.coffee"
+  ],
+  "names": [],
+  "mappings": ""
+}
