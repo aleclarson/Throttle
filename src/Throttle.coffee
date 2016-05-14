@@ -1,7 +1,6 @@
 
-{ Any } = require "type-utils"
-
 Type = require "Type"
+Any = require "Any"
 
 type = Type "Throttle"
 

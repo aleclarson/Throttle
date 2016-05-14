@@ -1,8 +1,8 @@
 var Any, Type, type;
 
-Any = require("type-utils").Any;
-
 Type = require("Type");
+
+Any = require("Any");
 
 type = Type("Throttle");
 
