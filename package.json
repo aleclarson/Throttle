@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "main": "./js/src/Throttle",
   "dependencies": {
-    "type-utils": "aleclarson/type-utils#1.0.0",
+    "Any": "aleclarson/Any#1.0.0",
     "Type": "aleclarson/Type#1.0.0"
   },
   "lotus": {
