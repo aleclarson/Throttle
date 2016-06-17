@@ -1,8 +1,10 @@
-var Any, Type, type;
+var Type, getArgProp, isNumber, type;
+
+getArgProp = require("getArgProp");
+
+isNumber = require("isNumber");
 
 Type = require("Type");
-
-Any = require("Any");
 
 type = Type("Throttle");
 
@@ -11,14 +13,13 @@ type.inherits(Function);
 type.createInstance(function() {
   var self;
   return self = function() {
-    return self._callEventually(self._context || this, arguments);
+    return self._callEventually(this, arguments);
   };
 });
 
 type.optionTypes = {
   ms: Number,
   fn: Function.Kind,
-  context: Any,
   runEventually: Boolean
 };
 
@@ -26,25 +27,25 @@ type.optionDefaults = {
   runEventually: true
 };
 
+type.createArguments(function(args) {
+  if (isNumber(args[0])) {
+    args[0] = {
+      ms: args[0],
+      fn: args[1]
+    };
+  }
+  return args;
+});
+
 type.defineValues({
-  _ms: function(options) {
-    return options.ms;
-  },
-  _fn: function(options) {
-    return options.fn;
-  },
-  _context: function(options) {
-    return options.context;
-  },
-  _runEventually: function(options) {
-    return options.runEventually;
-  },
+  _ms: getArgProp("ms"),
+  _fn: getArgProp("fn"),
+  _context: getArgProp("context"),
+  _runEventually: getArgProp("runEventually"),
   _pending: null,
   _disabled: false,
   _throttle: null
 });
-
-type.bindMethods(["_onThrottleEnd"]);
 
 type.defineMethods({
   toString: function() {
@@ -104,6 +105,8 @@ type.defineMethods({
     return this._pending = null;
   }
 });
+
+type.bindMethods(["_onThrottleEnd"]);
 
 module.exports = type.build();
 

@@ -1,8 +1,8 @@
 
-# throttle 2.0.0 ![stable](https://img.shields.io/badge/stability-stable-4EBA0F.svg?style=flat)
+# Throttle 2.0.0 ![stable](https://img.shields.io/badge/stability-stable-4EBA0F.svg?style=flat)
 
 ```coffee
-Throttle = require "throttle"
+Throttle = require "Throttle"
 
 func = Throttle
   ms: 1000

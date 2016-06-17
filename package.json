@@ -1,10 +1,11 @@
 {
-  "name": "throttle",
+  "name": "Throttle",
   "version": "2.0.0",
   "main": "./js/src/Throttle",
   "dependencies": {
-    "Any": "aleclarson/Any#1.0.0",
-    "Type": "aleclarson/Type#1.0.0"
+    "Type": "aleclarson/Type#1.0.0",
+    "getArgProp": "aleclarson/getArgProp#1.0.0",
+    "isNumber": "aleclarson/isNumber#1.0.0"
   },
   "lotus": {
     "plugins": [

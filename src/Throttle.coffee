@@ -1,40 +1,47 @@
 
+getArgProp = require "getArgProp"
+isNumber = require "isNumber"
 Type = require "Type"
-Any = require "Any"
 
 type = Type "Throttle"
 
 type.inherits Function
 
 type.createInstance ->
-  self = -> self._callEventually self._context or this, arguments
+  self = -> self._callEventually this, arguments
 
 type.optionTypes =
   ms: Number
   fn: Function.Kind
-  context: Any
   runEventually: Boolean
 
 type.optionDefaults =
   runEventually: yes
 
+type.createArguments (args) ->
+
+  if isNumber args[0]
+    args[0] =
+      ms: args[0]
+      fn: args[1]
+
+  return args
+
 type.defineValues
 
-  _ms: (options) -> options.ms
+  _ms: getArgProp "ms"
 
-  _fn: (options) -> options.fn
+  _fn: getArgProp "fn"
 
-  _context: (options) -> options.context
+  _context: getArgProp "context"
 
-  _runEventually: (options) -> options.runEventually
+  _runEventually: getArgProp "runEventually"
 
   _pending: null
 
   _disabled: no
 
   _throttle: null
-
-type.bindMethods [ "_onThrottleEnd" ]
 
 type.defineMethods
 
@@ -78,5 +85,9 @@ type.defineMethods
     clearTimeout @_throttle
     @_throttle = null
     @_pending = null
+
+type.bindMethods [
+  "_onThrottleEnd"
+]
 
 module.exports = type.build()
