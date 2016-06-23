@@ -8,14 +8,14 @@ Type = require("Type");
 
 type = Type("Throttle");
 
-type.inherits(Function);
+type._kind = Function;
 
-type.createInstance(function() {
+type._createInstance = function() {
   var self;
   return self = function() {
     return self._callEventually(this, arguments);
   };
-});
+};
 
 type.optionTypes = {
   ms: Number,
@@ -47,7 +47,7 @@ type.defineValues({
   _throttle: null
 });
 
-type.defineMethods({
+type.overrideMethods({
   toString: function() {
     return this._callEventually.toString();
   },
@@ -57,7 +57,10 @@ type.defineMethods({
     }
     this._stop();
     this._callImmediately(this._context || this, arguments);
-  },
+  }
+});
+
+type.defineMethods({
   disable: function() {
     if (this._disabled) {
       return;

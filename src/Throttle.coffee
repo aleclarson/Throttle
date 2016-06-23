@@ -5,9 +5,8 @@ Type = require "Type"
 
 type = Type "Throttle"
 
-type.inherits Function
-
-type.createInstance ->
+type._kind = Function
+type._createInstance = ->
   self = -> self._callEventually this, arguments
 
 type.optionTypes =
@@ -43,7 +42,7 @@ type.defineValues
 
   _throttle: null
 
-type.defineMethods
+type.overrideMethods
 
   toString: ->
     @_callEventually.toString()
@@ -53,6 +52,8 @@ type.defineMethods
     @_stop()
     @_callImmediately @_context or this, arguments
     return
+
+type.defineMethods
 
   disable: ->
     return if @_disabled
