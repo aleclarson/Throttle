@@ -1,7 +1,7 @@
 {
   "name": "Throttle",
   "version": "2.0.0",
-  "main": "./js/src/Throttle",
+  "main": "js/Throttle",
   "dependencies": {
     "Type": "aleclarson/Type#1.0.0",
     "fromArgs": "aleclarson/fromArgs#1.0.0",
