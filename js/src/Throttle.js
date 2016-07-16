@@ -1,6 +1,6 @@
-var Type, getArgProp, isNumber, type;
+var Type, fromArgs, isNumber, type;
 
-getArgProp = require("getArgProp");
+fromArgs = require("fromArgs");
 
 isNumber = require("isNumber");
 
@@ -38,10 +38,10 @@ type.createArguments(function(args) {
 });
 
 type.defineValues({
-  _ms: getArgProp("ms"),
-  _fn: getArgProp("fn"),
-  _context: getArgProp("context"),
-  _runEventually: getArgProp("runEventually"),
+  _ms: fromArgs("ms"),
+  _fn: fromArgs("fn"),
+  _context: fromArgs("context"),
+  _runEventually: fromArgs("runEventually"),
   _pending: null,
   _disabled: false,
   _throttle: null
@@ -113,4 +113,4 @@ type.bindMethods(["_onThrottleEnd"]);
 
 module.exports = type.build();
 
-//# sourceMappingURL=../../map/src/Throttle.map
+//# sourceMappingURL=map/Throttle.map

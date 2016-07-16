@@ -1,5 +1,5 @@
 
-getArgProp = require "getArgProp"
+fromArgs = require "fromArgs"
 isNumber = require "isNumber"
 Type = require "Type"
 
@@ -28,13 +28,13 @@ type.createArguments (args) ->
 
 type.defineValues
 
-  _ms: getArgProp "ms"
+  _ms: fromArgs "ms"
 
-  _fn: getArgProp "fn"
+  _fn: fromArgs "fn"
 
-  _context: getArgProp "context"
+  _context: fromArgs "context"
 
-  _runEventually: getArgProp "runEventually"
+  _runEventually: fromArgs "runEventually"
 
   _pending: null
 
