@@ -17,15 +17,11 @@ type._createInstance = function() {
   };
 };
 
-type.optionTypes = {
-  ms: Number,
-  fn: Function.Kind,
-  runEventually: Boolean
-};
-
-type.optionDefaults = {
-  runEventually: true
-};
+type.defineOptions({
+  ms: Number.isRequired,
+  fn: Function.Kind.isRequired,
+  runEventually: Boolean.withDefault(true)
+});
 
 type.createArguments(function(args) {
   if (isNumber(args[0])) {
@@ -88,16 +84,6 @@ type.defineMethods({
       args: args
     };
   },
-  _onThrottleEnd: function() {
-    var args, context, ref;
-    this._throttle = null;
-    if (!this._pending) {
-      return;
-    }
-    ref = this._pending, context = ref.context, args = ref.args;
-    this._pending = null;
-    return this._callImmediately(context, args);
-  },
   _callImmediately: function(context, args) {
     this._fn.apply(context, args);
     return this._throttle = setTimeout(this._onThrottleEnd, this._ms);
@@ -109,7 +95,18 @@ type.defineMethods({
   }
 });
 
-type.bindMethods(["_onThrottleEnd"]);
+type.defineBoundMethods({
+  _onThrottleEnd: function() {
+    var args, context, ref;
+    this._throttle = null;
+    if (!this._pending) {
+      return;
+    }
+    ref = this._pending, context = ref.context, args = ref.args;
+    this._pending = null;
+    return this._callImmediately(context, args);
+  }
+});
 
 module.exports = type.build();
 

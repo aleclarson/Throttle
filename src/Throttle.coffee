@@ -9,13 +9,10 @@ type._kind = Function
 type._createInstance = ->
   self = -> self._callEventually this, arguments
 
-type.optionTypes =
-  ms: Number
-  fn: Function.Kind
-  runEventually: Boolean
-
-type.optionDefaults =
-  runEventually: yes
+type.defineOptions
+  ms: Number.isRequired
+  fn: Function.Kind.isRequired
+  runEventually: Boolean.withDefault yes
 
 type.createArguments (args) ->
 
@@ -71,13 +68,6 @@ type.defineMethods
     return unless @_runEventually
     @_pending = { context, args }
 
-  _onThrottleEnd: ->
-    @_throttle = null
-    return unless @_pending
-    { context, args } = @_pending
-    @_pending = null
-    @_callImmediately context, args
-
   _callImmediately: (context, args) ->
     @_fn.apply context, args
     @_throttle = setTimeout @_onThrottleEnd, @_ms
@@ -87,8 +77,13 @@ type.defineMethods
     @_throttle = null
     @_pending = null
 
-type.bindMethods [
-  "_onThrottleEnd"
-]
+type.defineBoundMethods
+
+  _onThrottleEnd: ->
+    @_throttle = null
+    return unless @_pending
+    { context, args } = @_pending
+    @_pending = null
+    @_callImmediately context, args
 
 module.exports = type.build()
