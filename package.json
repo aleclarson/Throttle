@@ -1,0 +1,15 @@
+{
+  "name": "Throttle",
+  "version": "2.0.0",
+  "main": "js/Throttle",
+  "dependencies": {
+    "Type": "aleclarson/Type#1.1.0",
+    "fromArgs": "aleclarson/fromArgs#1.0.0",
+    "isNumber": "aleclarson/isNumber#1.0.0"
+  },
+  "lotus": {
+    "plugins": [
+      "lotus-coffee"
+    ]
+  }
+}
