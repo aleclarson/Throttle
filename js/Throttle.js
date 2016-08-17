@@ -1,6 +1,4 @@
-var Type, fromArgs, isNumber, type;
-
-fromArgs = require("fromArgs");
+var Type, isNumber, type;
 
 isNumber = require("isNumber");
 
@@ -17,30 +15,31 @@ type._createInstance = function() {
   };
 };
 
-type.defineOptions({
-  ms: Number.isRequired,
-  fn: Function.Kind.isRequired,
-  runEventually: Boolean.withDefault(true)
-});
-
-type.createArguments(function(args) {
+type.initArgs(function(args) {
   if (isNumber(args[0])) {
     args[0] = {
       ms: args[0],
       fn: args[1]
     };
   }
-  return args;
 });
 
-type.defineValues({
-  _ms: fromArgs("ms"),
-  _fn: fromArgs("fn"),
-  _context: fromArgs("context"),
-  _runEventually: fromArgs("runEventually"),
-  _pending: null,
-  _disabled: false,
-  _throttle: null
+type.defineOptions({
+  ms: Number.isRequired,
+  fn: Function.Kind.isRequired,
+  runEventually: Boolean.withDefault(true)
+});
+
+type.defineValues(function(options) {
+  return {
+    _ms: options.ms,
+    _fn: options.fn,
+    _context: options.context,
+    _runEventually: options.runEventually,
+    _pending: null,
+    _disabled: false,
+    _throttle: null
+  };
 });
 
 type.overrideMethods({
