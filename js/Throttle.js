@@ -1,0 +1,113 @@
+var Type, fromArgs, isNumber, type;
+
+fromArgs = require("fromArgs");
+
+isNumber = require("isNumber");
+
+Type = require("Type");
+
+type = Type("Throttle");
+
+type._kind = Function;
+
+type._createInstance = function() {
+  var self;
+  return self = function() {
+    return self._callEventually(this, arguments);
+  };
+};
+
+type.defineOptions({
+  ms: Number.isRequired,
+  fn: Function.Kind.isRequired,
+  runEventually: Boolean.withDefault(true)
+});
+
+type.createArguments(function(args) {
+  if (isNumber(args[0])) {
+    args[0] = {
+      ms: args[0],
+      fn: args[1]
+    };
+  }
+  return args;
+});
+
+type.defineValues({
+  _ms: fromArgs("ms"),
+  _fn: fromArgs("fn"),
+  _context: fromArgs("context"),
+  _runEventually: fromArgs("runEventually"),
+  _pending: null,
+  _disabled: false,
+  _throttle: null
+});
+
+type.overrideMethods({
+  toString: function() {
+    return this._callEventually.toString();
+  },
+  call: function() {
+    if (this._disabled) {
+      return;
+    }
+    this._stop();
+    this._callImmediately(this._context || this, arguments);
+  }
+});
+
+type.defineMethods({
+  disable: function() {
+    if (this._disabled) {
+      return;
+    }
+    this._disabled = true;
+    this._stop();
+    this._context = null;
+  },
+  _callEventually: function(context, args) {
+    if (this._disabled) {
+      return;
+    }
+    if (this._throttle != null) {
+      return this._setPending(context, args);
+    } else {
+      return this._callImmediately(context, args);
+    }
+  },
+  _setPending: function(context, args) {
+    if (!this._runEventually) {
+      return;
+    }
+    return this._pending = {
+      context: context,
+      args: args
+    };
+  },
+  _callImmediately: function(context, args) {
+    this._fn.apply(context, args);
+    return this._throttle = setTimeout(this._onThrottleEnd, this._ms);
+  },
+  _stop: function() {
+    clearTimeout(this._throttle);
+    this._throttle = null;
+    return this._pending = null;
+  }
+});
+
+type.defineBoundMethods({
+  _onThrottleEnd: function() {
+    var args, context, ref;
+    this._throttle = null;
+    if (!this._pending) {
+      return;
+    }
+    ref = this._pending, context = ref.context, args = ref.args;
+    this._pending = null;
+    return this._callImmediately(context, args);
+  }
+});
+
+module.exports = type.build();
+
+//# sourceMappingURL=map/Throttle.map
