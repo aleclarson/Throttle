@@ -1,5 +1,4 @@
 
-fromArgs = require "fromArgs"
 isNumber = require "isNumber"
 Type = require "Type"
 
@@ -9,29 +8,27 @@ type._kind = Function
 type._createInstance = ->
   self = -> self._callEventually this, arguments
 
+type.initArgs (args) ->
+  if isNumber args[0]
+    args[0] =
+      ms: args[0]
+      fn: args[1]
+  return
+
 type.defineOptions
   ms: Number.isRequired
   fn: Function.Kind.isRequired
   runEventually: Boolean.withDefault yes
 
-type.createArguments (args) ->
+type.defineValues (options) ->
 
-  if isNumber args[0]
-    args[0] =
-      ms: args[0]
-      fn: args[1]
+  _ms: options.ms
 
-  return args
+  _fn: options.fn
 
-type.defineValues
+  _context: options.context
 
-  _ms: fromArgs "ms"
-
-  _fn: fromArgs "fn"
-
-  _context: fromArgs "context"
-
-  _runEventually: fromArgs "runEventually"
+  _runEventually: options.runEventually
 
   _pending: null
 
