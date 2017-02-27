@@ -8,17 +8,23 @@ type._kind = Function
 type._createInstance = ->
   self = -> self._callEventually this, arguments
 
-type.initArgs (args) ->
-  if isNumber args[0]
-    args[0] =
-      ms: args[0]
-      fn: args[1]
-  return
+type.defineArgs ->
 
-type.defineOptions
-  ms: Number.isRequired
-  fn: Function.Kind.isRequired
-  runEventually: Boolean.withDefault yes
+  required: yes
+  types:
+    ms: Number
+    fn: Function.Kind
+    runEventually: Boolean
+
+  defaults:
+    runEventually: yes
+
+  create: (args) ->
+    if isNumber args[0]
+      args[0] =
+        ms: args[0]
+        fn: args[1]
+    return args
 
 type.defineValues (options) ->
 
