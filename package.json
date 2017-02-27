@@ -1,0 +1,9 @@
+{
+  "name": "Throttle",
+  "version": "2.1.0",
+  "main": "js/Throttle",
+  "dependencies": {
+    "Type": "aleclarson/Type#2.3.1",
+    "isNumber": "aleclarson/isNumber#1.0.0"
+  }
+}
