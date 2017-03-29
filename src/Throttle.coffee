@@ -11,6 +11,7 @@ type._createInstance = ->
 type.defineArgs ->
 
   required: yes
+
   types:
     ms: Number
     fn: Function.Kind
