@@ -1,5 +1,5 @@
 
-isNumber = require "isNumber"
+isType = require "isType"
 Type = require "Type"
 
 type = Type "Throttle"
@@ -21,7 +21,7 @@ type.defineArgs ->
     runEventually: yes
 
   create: (args) ->
-    if isNumber args[0]
+    if isType args[0], Number
       args[0] =
         ms: args[0]
         fn: args[1]

@@ -11,6 +11,6 @@
   },
   "dependencies": {
     "Type": "aleclarson/Type#2.3.1",
-    "isNumber": "aleclarson/isNumber#1.0.0"
+    "isType": "aleclarson/isType#1.0.1"
   }
 }
