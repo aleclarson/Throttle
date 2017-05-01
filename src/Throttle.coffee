@@ -4,9 +4,17 @@ Type = require "Type"
 
 type = Type "Throttle"
 
-type._kind = Function
-type._createInstance = ->
+type.inherits Function
+
+type.createInstance ->
   self = -> self._callEventually this, arguments
+
+type.createArgs (args) ->
+  if isType args[0], Number
+    args[0] =
+      ms: args[0]
+      fn: args[1]
+  return args
 
 type.defineArgs ->
 
@@ -19,13 +27,6 @@ type.defineArgs ->
 
   defaults:
     runEventually: yes
-
-  create: (args) ->
-    if isType args[0], Number
-      args[0] =
-        ms: args[0]
-        fn: args[1]
-    return args
 
 type.defineValues (options) ->
 
@@ -57,37 +58,43 @@ type.overrideMethods
 type.defineMethods
 
   disable: ->
-    return if @_disabled
-    @_disabled = yes
-    @_stop()
-    @_context = null
-    return
+    unless @_disabled
+      @_disabled = yes
+      @_stop()
+      @_context = null
+      return
 
   _callEventually: (context, args) ->
-    return if @_disabled
-    if @_throttle? then @_setPending context, args
-    else @_callImmediately context, args
+    unless @_disabled
+      if @_throttle?
+      then @_setPending context, args
+      else @_callImmediately context, args
+      return
 
   _setPending: (context, args) ->
-    return unless @_runEventually
-    @_pending = { context, args }
+    if @_runEventually
+      @_pending = {context, args}
+      return
 
   _callImmediately: (context, args) ->
     @_fn.apply context, args
     @_throttle = setTimeout @_onThrottleEnd, @_ms
+    return
 
   _stop: ->
     clearTimeout @_throttle
     @_throttle = null
     @_pending = null
+    return
 
 type.defineBoundMethods
 
   _onThrottleEnd: ->
     @_throttle = null
-    return unless @_pending
-    { context, args } = @_pending
-    @_pending = null
-    @_callImmediately context, args
+    if @_pending
+      {context, args} = @_pending
+      @_pending = null
+      @_callImmediately context, args
+      return
 
 module.exports = type.build()
