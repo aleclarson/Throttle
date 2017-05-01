@@ -34,8 +34,6 @@ type.defineValues (options) ->
 
   _fn: options.fn
 
-  _context: options.context
-
   _runEventually: options.runEventually
 
   _pending: null
@@ -55,7 +53,6 @@ type.defineMethods
     unless @_disabled
       @_disabled = yes
       @_stop()
-      @_context = null
       return
 
   _callEventually: (context, args) ->
