@@ -49,12 +49,6 @@ type.overrideMethods
   toString: ->
     @_callEventually.toString()
 
-  call: ->
-    return if @_disabled
-    @_stop()
-    @_callImmediately @_context or this, arguments
-    return
-
 type.defineMethods
 
   disable: ->
